@@ -1,0 +1,12 @@
+# Client data — saved scenario sets stay local
+data/
+
+# Reference spreadsheet with personal client numbers
+*.xlsx
+
+# Local tooling / machine-specific config
+.claude/
+__pycache__/
+*.pyc
+.DS_Store
+.env

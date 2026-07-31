@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Importing listing…</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; background: #f6f5f2;
+           display: grid; place-items: center; height: 100vh; margin: 0; color: #1b2430; }
+    .msg { text-align: center; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <div class="msg" id="msg">Importing listing…</div>
+  <script>
+    (function () {
+      try {
+        var raw = location.hash.slice(1);
+        var data = JSON.parse(decodeURIComponent(raw));
+        if (!data || !data.price) throw new Error("no price");
+        localStorage.setItem("hpa_pending_import", JSON.stringify({ data: data, ts: Date.now() }));
+
+        // If a calculator tab is already open, it consumes the import via the
+        // storage event and acknowledges. Then this popup closes itself instead
+        // of becoming a second, competing calculator tab.
+        var acked = false;
+        window.addEventListener("storage", function (e) {
+          if (e.key === "hpa_import_ack" && e.newValue) {
+            acked = true;
+            document.getElementById("msg").textContent = "Imported ✓ — you can return to the calculator.";
+            setTimeout(function () { window.close(); }, 400);
+          }
+        });
+        // No ack means no calculator tab is open — become the calculator,
+        // which picks the pending import up on load.
+        setTimeout(function () { if (!acked) location.replace("/"); }, 900);
+      } catch (e) {
+        document.getElementById("msg").innerHTML =
+          "Couldn't read the listing data.<br>Go back to the Zillow listing page and click the bookmarklet again.";
+      }
+    })();
+  </script>
+</body>
+</html>

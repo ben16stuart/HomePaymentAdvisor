@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Payment Advisor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">🏡</div>
+      <div>
+        <h1>Home Payment Advisor</h1>
+        <p>Monthly payment scenarios for your home purchase</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" id="btnZillow">🔍 Browse Zillow</button>
+      <button class="btn btn-ghost" id="btnSaves">💾 Saved Clients</button>
+      <button class="btn btn-primary" id="btnReport">📄 Export Report</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============================ Sidebar ============================ -->
+    <aside class="sidebar">
+      <section class="panel">
+        <h2 class="panel-title">Loan Inputs</h2>
+
+        <div class="field" data-input="price">
+          <div class="field-head"><label for="in-price">Purchase Price</label>
+            <input type="text" class="num" id="in-price" inputmode="decimal"></div>
+          <input type="range" id="sl-price" min="50000" max="2500000" step="5000">
+        </div>
+
+        <div class="field" data-input="rate">
+          <div class="field-head"><label for="in-rate">Interest Rate (%)</label>
+            <input type="text" class="num" id="in-rate" inputmode="decimal"></div>
+          <input type="range" id="sl-rate" min="3" max="10" step="0.005">
+        </div>
+
+        <div class="field" data-input="termYears">
+          <div class="field-head"><label for="in-termYears">Loan Term (years)</label>
+            <input type="text" class="num" id="in-termYears" inputmode="numeric"></div>
+          <input type="range" id="sl-termYears" min="10" max="40" step="5">
+        </div>
+
+        <div class="field" data-input="annualTaxes">
+          <div class="field-head"><label for="in-annualTaxes">Annual Property Taxes</label>
+            <input type="text" class="num" id="in-annualTaxes" inputmode="decimal"></div>
+          <input type="range" id="sl-annualTaxes" min="0" max="40000" step="100">
+          <button class="mini-link" id="btnTaxRule" title="New construction rule of thumb from the worksheet">New construction? Use 1% of price</button>
+        </div>
+
+        <div class="field" data-input="insMonthly">
+          <div class="field-head"><label for="in-insMonthly">Homeowners Insurance (mo)</label>
+            <input type="text" class="num" id="in-insMonthly" inputmode="decimal"></div>
+          <input type="range" id="sl-insMonthly" min="0" max="1500" step="10">
+        </div>
+
+        <div class="field" data-input="hoaMonthly">
+          <div class="field-head"><label for="in-hoaMonthly">HOA Dues (mo)</label>
+            <input type="text" class="num" id="in-hoaMonthly" inputmode="decimal"></div>
+          <input type="range" id="sl-hoaMonthly" min="0" max="1500" step="10">
+        </div>
+
+        <div class="field" data-input="closingCosts">
+          <div class="field-head"><label for="in-closingCosts">Est. Closing Costs</label>
+            <input type="text" class="num" id="in-closingCosts" inputmode="decimal"></div>
+          <input type="range" id="sl-closingCosts" min="0" max="40000" step="250">
+        </div>
+
+        <div class="field" data-input="cashAvailable">
+          <div class="field-head"><label for="in-cashAvailable">Cash Available at Closing</label>
+            <input type="text" class="num" id="in-cashAvailable" inputmode="decimal"></div>
+          <input type="range" id="sl-cashAvailable" min="0" max="1000000" step="5000">
+          <button class="mini-link" id="btnCashScenario">＋ Add scenario that puts this cash to work</button>
+        </div>
+
+        <div class="field" data-input="rentalIncome">
+          <div class="field-head"><label for="in-rentalIncome">Rental Income (mo)</label>
+            <input type="text" class="num" id="in-rentalIncome" inputmode="decimal"></div>
+          <input type="range" id="sl-rentalIncome" min="0" max="10000" step="50">
+          <p class="panel-hint" style="margin:6px 0 0">If the client keeps their current home and rents it.
+            Turn it on per scenario with the checkbox on each card.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title-row">
+          <h2 class="panel-title">Payment Targets</h2>
+          <button class="btn-icon" id="btnAddTarget" title="Add a budget target">＋</button>
+        </div>
+        <p class="panel-hint">Budget lines to compare against (e.g. “Current payment”, “Comfort limit”). Shown on the chart.</p>
+        <div id="targetList"></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">Report Details</h2>
+        <p class="panel-hint">Appears on the exported client report.</p>
+        <div class="stack">
+          <input type="text" id="cl-name" placeholder="Client name">
+          <input type="text" id="cl-preparedBy" placeholder="Prepared by (loan specialist)">
+          <input type="text" id="cl-company" placeholder="Company">
+          <input type="text" id="cl-nmls" placeholder="NMLS #">
+          <input type="text" id="cl-phone" placeholder="Phone">
+          <input type="text" id="cl-email" placeholder="Email">
+        </div>
+      </section>
+    </aside>
+
+    <!-- ============================ Content ============================ -->
+    <div class="content">
+      <div id="propertyBanner" class="property-banner hidden"></div>
+
+      <section class="panel chart-panel">
+        <div class="panel-title-row">
+          <h2 class="panel-title">Monthly Payment Comparison</h2>
+          <div class="legend" id="chartLegend"></div>
+        </div>
+        <div id="chart"></div>
+      </section>
+
+      <div class="scenario-toolbar">
+        <h2 class="section-title">Scenarios</h2>
+        <button class="btn btn-outline" id="btnAddScenario">＋ Add Scenario</button>
+      </div>
+      <div class="cards" id="cards"></div>
+    </div>
+  </main>
+
+  <!-- ============================ Zillow modal ============================ -->
+  <div class="modal-backdrop hidden" id="zillowModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Import a Home from Zillow</h3>
+        <button class="btn-icon" data-close="zillowModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="bk-setup">
+          <div class="bk-setup-head">One-time setup</div>
+          <p>Drag this button up into your browser’s bookmarks bar:</p>
+          <a id="bookmarklet" class="bookmarklet" href="#" title="Drag me to your bookmarks bar">🏡 Send to Payment Advisor</a>
+          <p class="bk-hint">Bookmarks bar hidden? Press <strong>⌘⇧B</strong> (Mac) or <strong>Ctrl+Shift+B</strong> to show it.</p>
+        </div>
+        <ol class="steps">
+          <li>Browse Zillow and find a home the client likes.
+            <button class="btn btn-outline btn-sm" id="btnOpenZillow">Open Zillow ↗</button></li>
+          <li>On the listing page, click <strong>🏡 Send to Payment Advisor</strong> in your bookmarks bar
+            — the home and its numbers appear here automatically.</li>
+        </ol>
+        <details>
+          <summary>Alternative: paste the listing URL</summary>
+          <p class="panel-hint" style="margin-top:8px">Zillow sometimes blocks this automated lookup — the bookmarklet above always works.</p>
+          <div class="row">
+            <input type="text" id="zillowUrl" placeholder="https://www.zillow.com/homedetails/…">
+            <button class="btn btn-primary" id="btnImportZillow">Import</button>
+          </div>
+          <p class="error-text hidden" id="zillowError"></p>
+        </details>
+        <details id="zillowManual">
+          <summary>Alternative: enter listing details manually</summary>
+          <div class="grid-2">
+            <label>Address <input type="text" id="mz-address" placeholder="123 Main St, Austin, TX"></label>
+            <label>List Price <input type="text" id="mz-price" inputmode="decimal" placeholder="500000"></label>
+            <label>Annual Taxes <input type="text" id="mz-taxes" inputmode="decimal" placeholder="5000"></label>
+            <label>HOA / month <input type="text" id="mz-hoa" inputmode="decimal" placeholder="0"></label>
+          </div>
+          <button class="btn btn-primary" id="btnManualApply" style="margin-top:12px">Apply to Calculator</button>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ Saves modal ============================ -->
+  <div class="modal-backdrop hidden" id="savesModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Saved Clients</h3>
+        <button class="btn-icon" data-close="savesModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <input type="text" id="saveName" placeholder="Save current setup as… (e.g. “The Stuarts — 123 Main St”)">
+          <button class="btn btn-primary" id="btnDoSave">Save</button>
+        </div>
+        <div id="savesList" class="saves-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="{{ url_for('static', filename='js/calc.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
