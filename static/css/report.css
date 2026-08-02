@@ -142,6 +142,49 @@ table.cmp tr.group td {
   font-size: 10px; color: var(--ink-3); line-height: 1.5;
 }
 
+/* ------------------------------------------------------------- homes summary */
+.home-page { margin-bottom: 26px; }
+.homes-header { padding-bottom: 12px; margin-bottom: 16px; }
+.homes-header h1 { font-size: 22px; }
+.rpt-officer .pg { margin-top: 4px; color: var(--ink-3); }
+
+.homes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-content: start;
+}
+.home-card {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 9px;
+  padding: 10px 12px 11px;
+  break-inside: avoid;
+}
+.hc-head { min-height: 32px; }
+.home-card h3 {
+  margin: 0; font-size: 12.5px; color: var(--navy); line-height: 1.25;
+}
+.hc-facts { font-size: 10.5px; color: var(--ink-3); margin-top: 2px; }
+.hc-price {
+  font: 600 19px "Fraunces", Georgia, serif; color: var(--ink-1); margin: 6px 0 3px;
+}
+.hc-meta {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  font-size: 10px; color: var(--ink-2);
+  padding-bottom: 7px; margin-bottom: 6px; border-bottom: 1px solid var(--line);
+}
+.hc-table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+.hc-table th {
+  text-align: right; font-size: 9px; text-transform: uppercase; letter-spacing: 0.4px;
+  color: var(--ink-3); font-weight: 600; padding: 0 0 3px;
+}
+.hc-table th:first-child { text-align: left; }
+.hc-table td { padding: 2.5px 0; text-align: right; border-top: 1px solid #f3f1ec; }
+.hc-table td:first-child { text-align: left; color: var(--ink-2); }
+.hc-table td:nth-child(2) { font-weight: 700; color: var(--ink-1); }
+.rent-mark { color: #0e7a4d; font-weight: 700; }
+
 /* ------------------------------------------------------------- print */
 @media print {
   .print-bar { display: none; }
@@ -151,5 +194,8 @@ table.cmp tr.group td {
   }
   .rpt-section { break-inside: avoid; }
   .rpt-section.allow-break { break-inside: auto; }
+  /* Exactly six homes per sheet */
+  .home-page { break-after: page; margin-bottom: 0; }
+  .home-page:last-child { break-after: auto; }
 }
 @page { size: letter; margin: 14mm 12mm; }

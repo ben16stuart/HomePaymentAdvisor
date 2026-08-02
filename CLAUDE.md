@@ -15,8 +15,9 @@ scenarios when buying a house. Replicates the logic of
 ## Architecture
 
 - `app.py` — Flask server. Routes: `/` (calculator), `/report` (printable
-  report), `/api/saves` CRUD (JSON persisted to `data/saves.json`),
-  `/api/zillow` (best-effort listing scrape).
+  report), `/homes` (six-per-page summary of every imported home),
+  `/import` (bookmarklet handoff), `/api/saves` CRUD (JSON persisted to
+  `data/saves.json`), `/api/zillow` (best-effort listing scrape).
 - `static/js/calc.js` — the single source of truth for all mortgage math
   (`HPA.compute`), shared by calculator and report pages. Client-side only;
   the server does no calculation.
@@ -24,6 +25,13 @@ scenarios when buying a house. Replicates the logic of
   `localStorage` (`hpa_state_v1`) and is re-rendered on every input.
 - `static/js/report.js` + `templates/report.html` — reads the same
   localStorage state and renders a print-first report (user prints to PDF).
+- `static/js/homes.js` + `templates/homes.html` — per-home summary cards,
+  chunked into pages of 6 (`.home-page` gets `break-after: page` in print).
+  Each home overrides price/taxes/HOA/insurance; rate, term, and closing costs
+  stay global. Cards cap at 4 scenarios to stay readable at 6-up density.
+- **New Client** (`#btnNewClient`) resets to `HPA.defaultState()` — so any new
+  top-level state field must be added there too, or the reset throws mid-render
+  and silently saves nothing.
 
 ## Spreadsheet parity (do not change without checking the xlsx)
 

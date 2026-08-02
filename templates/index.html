@@ -20,6 +20,7 @@
       </div>
     </div>
     <div class="topbar-actions">
+      <button class="btn btn-ghost" id="btnNewClient" title="Clear everything and start a fresh client">✨ New Client</button>
       <button class="btn btn-ghost" id="btnZillow">🔍 Browse Zillow</button>
       <button class="btn btn-ghost" id="btnSaves">💾 Saved Clients</button>
       <button class="btn btn-primary" id="btnReport">📄 Export Report</button>
@@ -190,6 +191,26 @@
           <button class="btn btn-primary" id="btnDoSave">Save</button>
         </div>
         <div id="savesList" class="saves-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ New client confirm ============================ -->
+  <div class="modal-backdrop hidden" id="newClientModal">
+    <div class="modal modal-sm">
+      <div class="modal-head">
+        <h3>Start a New Client?</h3>
+        <button class="btn-icon" data-close="newClientModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-top:0">This clears the current client’s details, imported homes, scenarios,
+          payment targets, and cash/rental figures — a clean slate for the next person.</p>
+        <p class="panel-hint">Saved clients are not affected. If you want to keep this setup,
+          cancel and save it first under 💾 Saved Clients.</p>
+        <div class="modal-actions">
+          <button class="btn btn-outline" data-close="newClientModal">Cancel</button>
+          <button class="btn btn-danger" id="btnConfirmNewClient">Clear &amp; Start Fresh</button>
+        </div>
       </div>
     </div>
   </div>

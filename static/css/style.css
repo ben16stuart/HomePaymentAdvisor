@@ -65,6 +65,7 @@ h1, h2, h3, .display { font-family: "Fraunces", Georgia, serif; }
   border: 1px solid var(--line); box-shadow: var(--shadow);
 }
 .btn-sm { padding: 5px 11px; font-size: 12.5px; margin-left: 8px; }
+.btn-danger { background: var(--danger); color: #fff; }
 .btn-icon {
   border: none; background: transparent; cursor: pointer;
   font-size: 16px; color: var(--ink-2); padding: 4px 8px; border-radius: 6px;
@@ -300,6 +301,8 @@ input[type="range"]::-moz-range-thumb {
 }
 .modal-head h3 { margin: 0; font-size: 18px; color: var(--navy); }
 .modal-body { padding: 16px 20px 20px; }
+.modal-sm { width: min(440px, 100%); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
 .steps { margin: 0 0 14px; padding-left: 20px; color: var(--ink-2); font-size: 13.5px; }
 .steps li { margin-bottom: 8px; }
 .error-text { color: var(--danger); font-size: 13px; margin: 10px 0 0; }

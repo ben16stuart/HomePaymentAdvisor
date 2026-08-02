@@ -50,6 +50,12 @@ def report():
     return render_template("report.html")
 
 
+@app.route("/homes")
+def homes_summary():
+    """Printable at-a-glance summary of every imported home, 6 per page."""
+    return render_template("homes.html")
+
+
 @app.route("/import")
 def import_listing():
     """Landing page for the bookmarklet: listing data arrives in the URL

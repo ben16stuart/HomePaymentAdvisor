@@ -30,6 +30,7 @@ const HPA = (() => {
     return {
       client: { name: "", preparedBy: "", company: "", nmls: "", phone: "", email: "" },
       property: null, // {address, photo, beds, baths, sqft, yearBuilt, url}
+      recentProperties: [], // last 10 imported listings, most recent first
       inputs: {
         price: 500000,
         annualTaxes: 5000,

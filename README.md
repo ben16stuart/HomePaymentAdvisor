@@ -20,7 +20,11 @@ comparisons, one-click Zillow listing import, and a polished printable report.
   photo straight into the calculator. (Server-side URL fetch and manual entry
   are available as fallbacks.)
 - **Recent houses** — the last 10 imported listings live in a dropdown so you
-  can flip between homes and compare payments with a client.
+  can flip between homes and compare payments with a client, plus a printable
+  **home comparison summary** (six homes per page) showing each home's price,
+  taxes, HOA, and payment/cash-to-close for every scenario.
+- **New client reset** — one click clears the current client's details, homes,
+  scenarios, and figures so the next client starts from a clean slate.
 - **Payment targets** — named budget lines (e.g. "Comfort limit") drawn on
   the comparison chart with within/over chips on every scenario.
 - **Cash available at closing** — see instantly which options the client's

@@ -110,6 +110,12 @@
     </select>`;
   }
 
+  function compareHomesBtn() {
+    if (state.recentProperties.length < 2) return "";
+    return `<button class="btn btn-outline btn-sm" id="btnCompareHomes"
+      title="Printable summary of every home imported for this client">📊 Compare all ${state.recentProperties.length} homes</button>`;
+  }
+
   function renderProperty() {
     const el = $("#propertyBanner");
     const p = state.property;
@@ -122,6 +128,7 @@
         <div class="pb-body pb-compact">
           <span class="pb-label">Compare a previous house:</span>
           ${recentDropdown()}
+          ${compareHomesBtn()}
         </div>`;
     } else {
       const facts = [];
@@ -138,10 +145,17 @@
         </div>
         <div class="pb-actions">
           ${state.recentProperties.length > 1 ? recentDropdown() : ""}
+          ${compareHomesBtn()}
           <button class="btn-icon" id="btnClearProp" title="Remove property">✕</button>
         </div>`;
       $("#btnClearProp").addEventListener("click", () => { state.property = null; renderAll(); });
     }
+
+    const cmp = $("#btnCompareHomes");
+    if (cmp) cmp.addEventListener("click", () => {
+      HPA.saveLocal(state);
+      window.open("/homes", "_blank");
+    });
 
     const sel = $("#recentSel");
     if (sel) sel.addEventListener("change", () => {
@@ -592,6 +606,16 @@
   $("#btnReport").addEventListener("click", () => {
     HPA.saveLocal(state);
     window.open("/report", "_blank");
+  });
+
+  /* New client — wipe the slate so the next client starts clean */
+  $("#btnNewClient").addEventListener("click", () => openModal("newClientModal"));
+  $("#btnConfirmNewClient").addEventListener("click", () => {
+    state = HPA.defaultState();
+    try { localStorage.removeItem("hpa_pending_import"); } catch (e) { /* storage unavailable */ }
+    renderAll();
+    closeModal("newClientModal");
+    toast("Cleared — ready for a new client.");
   });
 
   /* Toast */
