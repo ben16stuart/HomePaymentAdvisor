@@ -37,6 +37,20 @@ comparisons, one-click Zillow listing import, and a polished printable report.
 - **Saved clients** — save and reload complete setups by name, persisted
   server-side.
 
+## Password gate (for hosting outside localhost)
+
+Auth is off by default — matches every other app in this Docker setup. Set
+**`SITE_PASSWORD`** as an environment variable to turn it on: every route
+then requires that shared password before use, via a signed session cookie
+(30-day expiry, "Log Out" appears in the topbar once enabled).
+
+- `SECRET_KEY` (optional) — explicit session-signing key. If unset, one is
+  derived from `SITE_PASSWORD` so it stays consistent across gunicorn's
+  worker processes with zero extra config.
+- The `/import` route (the Zillow bookmarklet's landing page) is always
+  reachable without login — it carries the listing data in the URL fragment,
+  which a login redirect would silently drop, and it exposes nothing itself.
+
 ## Running
 
 ### Docker

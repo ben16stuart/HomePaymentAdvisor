@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Home Payment Advisor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
+  <style>
+    body {
+      min-height: 100vh; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    }
+    .login-card {
+      background: var(--card); border-radius: 14px; box-shadow: 0 12px 48px rgba(0,0,0,.3);
+      padding: 34px 32px; width: min(360px, 90vw); text-align: center;
+    }
+    .login-card .mark { font-size: 40px; margin-bottom: 6px; }
+    .login-card h1 { font-size: 20px; margin: 0 0 4px; color: var(--navy); }
+    .login-card p { margin: 0 0 20px; color: var(--ink-3); font-size: 13px; }
+    .login-card input[type="password"] {
+      width: 100%; border: 1px solid var(--line); border-radius: 8px;
+      padding: 11px 12px; font: 500 15px "Inter", sans-serif; text-align: center;
+      background: #fbfaf8; margin-bottom: 14px;
+    }
+    .login-card .btn { width: 100%; padding: 11px; font-size: 14px; }
+    .login-error {
+      background: #f9e3e1; color: var(--danger); border-radius: 7px;
+      padding: 8px 10px; font-size: 12.5px; margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+  <form class="login-card" method="post">
+    <div class="mark">🏡</div>
+    <h1>Home Payment Advisor</h1>
+    <p>Enter the password to continue</p>
+    {% if error %}<div class="login-error">{{ error }}</div>{% endif %}
+    <input type="hidden" name="next" value="{{ next or '' }}">
+    <input type="password" name="password" placeholder="Password" autofocus autocomplete="current-password">
+    <button type="submit" class="btn btn-primary">Sign In</button>
+  </form>
+</body>
+</html>

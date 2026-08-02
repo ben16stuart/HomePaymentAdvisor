@@ -1,0 +1,13 @@
+# Client data — never bake saved scenarios into the image
+data/
+
+# Reference spreadsheet with personal client numbers
+*.xlsx
+
+.git/
+.claude/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+README.md

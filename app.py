@@ -3,15 +3,17 @@
 Replicates the logic of "Payment Calculator - Stuart.xlsx" with live sliders,
 customizable scenarios, Zillow listing import, and a printable client report.
 """
+import hashlib
 import json
 import os
 import re
+import secrets
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
 
 import requests
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(APP_DIR, "data")
@@ -19,6 +21,60 @@ SAVES_FILE = os.path.join(DATA_DIR, "saves.json")
 _saves_lock = threading.Lock()
 
 app = Flask(__name__)
+
+# Opt-in password gate: unset SITE_PASSWORD (the local/Docker default) and the
+# app behaves exactly as before — no auth, localhost-only. Set it (as on a
+# public host) and every route below requires a login first.
+SITE_PASSWORD = os.environ.get("SITE_PASSWORD", "")
+
+# Session-signing key. Gunicorn runs multiple worker processes, so a randomly
+# generated key would differ per worker and invalidate sessions signed by a
+# different one on the next request. When the gate is on, derive the key from
+# SITE_PASSWORD so every worker computes the same one with no extra config;
+# an explicit SECRET_KEY env var always wins if set.
+app.secret_key = (
+    os.environ.get("SECRET_KEY")
+    or (hashlib.sha256(f"hpa-session-{SITE_PASSWORD}".encode()).hexdigest() if SITE_PASSWORD else secrets.token_hex(32))
+)
+app.permanent_session_lifetime = timedelta(days=30)
+
+
+@app.before_request
+def require_login():
+    if not SITE_PASSWORD:
+        return
+    # /import must stay reachable unauthenticated: the bookmarklet opens it
+    # with the listing data in the URL fragment, which a server-side redirect
+    # to /login would silently drop (fragments never reach the server).
+    if request.path in ("/login", "/logout", "/import") or request.path.startswith("/static/"):
+        return
+    if session.get("authed"):
+        return
+    if request.path.startswith("/api/"):
+        return jsonify({"error": "Session expired — refresh and log in again."}), 401
+    return redirect(url_for("login", next=request.path))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if not SITE_PASSWORD:
+        return redirect(url_for("index"))
+    error = None
+    next_url = request.values.get("next", "")
+    if request.method == "POST":
+        if secrets.compare_digest(request.form.get("password", ""), SITE_PASSWORD):
+            session.clear()
+            session["authed"] = True
+            session.permanent = True
+            return redirect(next_url if next_url.startswith("/") else url_for("index"))
+        error = "Incorrect password."
+    return render_template("login.html", error=error, next=next_url)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 
 # ---------------------------------------------------------------- saves store
@@ -42,7 +98,7 @@ def _write_saves(saves):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", auth_enabled=bool(SITE_PASSWORD))
 
 
 @app.route("/report")

@@ -20,6 +20,9 @@
       </div>
     </div>
     <div class="topbar-actions">
+      {% if auth_enabled %}
+      <a class="btn btn-ghost" href="{{ url_for('logout') }}" title="Log out">🔒 Log Out</a>
+      {% endif %}
       <button class="btn btn-ghost" id="btnNewClient" title="Clear everything and start a fresh client">✨ New Client</button>
       <button class="btn btn-ghost" id="btnZillow">🔍 Browse Zillow</button>
       <button class="btn btn-ghost" id="btnSaves">💾 Saved Clients</button>
