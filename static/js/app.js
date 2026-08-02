@@ -160,7 +160,10 @@
     const sel = $("#recentSel");
     if (sel) sel.addEventListener("change", () => {
       const r = state.recentProperties[+sel.value];
-      if (r) { applyListing(r); toast(`Switched to ${r.address || "listing"}.`); }
+      if (r) {
+        const missing = applyListing(r);
+        toast(`Switched to ${r.address || "listing"}.${missingSuffix(missing)}`, missing.length > 0);
+      }
     });
   }
 
@@ -402,9 +405,9 @@
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Import failed.");
-      applyListing(json.data);
+      const missing = applyListing(json.data);
       closeModal("zillowModal");
-      toast(`Imported ${json.data.address || "listing"} — inputs updated.`);
+      toast(`Imported ${json.data.address || "listing"} — inputs updated.${missingSuffix(missing)}`, missing.length > 0);
     } catch (err) {
       errEl.textContent = err.message;
       errEl.classList.remove("hidden");
@@ -427,11 +430,20 @@
     toast("Listing applied to calculator.");
   });
 
+  /* Applies a listing to the calculator. Every field is set outright — never
+     left as whatever the previous house happened to have — so a listing
+     missing a value shows up as an obvious 0 to fix, not a plausible-looking
+     number left over from a different house. Returns which fields, if any,
+     the listing didn't provide, so callers can fold that into their own
+     toast (a second toast() call would just overwrite the first). */
   function applyListing(d) {
     if (d.price) state.inputs.price = Math.round(d.price);
+    const missing = [];
     if (d.annualTaxes) state.inputs.annualTaxes = Math.round(d.annualTaxes);
-    if (d.hoaMonthly != null) state.inputs.hoaMonthly = Math.round(d.hoaMonthly);
+    else { state.inputs.annualTaxes = 0; missing.push("property taxes"); }
+    state.inputs.hoaMonthly = d.hoaMonthly != null ? Math.round(d.hoaMonthly) : 0;
     if (d.insMonthly) state.inputs.insMonthly = Math.round(d.insMonthly);
+    else { state.inputs.insMonthly = 0; missing.push("insurance"); }
     state.property = {
       address: d.address || null, photo: d.photo || null, url: d.url || null,
       beds: d.bedrooms || d.beds || null, baths: d.bathrooms || d.baths || null,
@@ -440,6 +452,11 @@
     };
     addRecent(d);
     renderAll();
+    return missing;
+  }
+
+  function missingSuffix(missing) {
+    return missing && missing.length ? ` (couldn't find ${missing.join(" or ")} — check manually)` : "";
   }
 
   /* Keep the last 10 imported houses (most recent first, deduped by address). */
@@ -467,7 +484,10 @@
   // page has already loaded and hands it to this app via /import#<json>.
   function bookmarkletHref() {
     const code = `(()=>{
-      const T=[...document.scripts].map(s=>s.textContent||'').join('\\n');
+      /* Zillow often embeds a chunk of this data as a JSON string nested inside
+         the outer JSON (escaped quotes), so normalize \\" -> " once up front
+         rather than special-casing every pattern below. */
+      const T=[...document.scripts].map(s=>s.textContent||'').join('\\n').replace(/\\\\"/g,'"');
       const n=(re)=>{const m=T.match(re);return m?parseFloat(m[1]):null;};
       const s=(re)=>{const m=T.match(re);return m?m[1]:null;};
       const price=n(/"price"\\s*:\\s*(\\d{5,9})/);
@@ -507,6 +527,7 @@
         livingArea:n(/"livingArea"\\s*:\\s*(\\d{3,6})/),yearBuilt:n(/"yearBuilt"\\s*:\\s*(\\d{4})/),
         photo:og?og.content:null,url:location.href.split('?')[0]};
       if(!data.price){alert('No listing price found on this page. Open a Zillow home-details page first, then click the bookmarklet.');return;}
+      console.log('Home Payment Advisor — extracted from this listing:', data);
       window.open('${location.origin}/import#'+encodeURIComponent(JSON.stringify(data)));
     })();`;
     return "javascript:" + code.replace(/\n\s*/g, "");
@@ -522,8 +543,8 @@
       const { data } = JSON.parse(raw);
       localStorage.removeItem("hpa_pending_import");
       if (data && data.price) {
-        applyListing(data);
-        toast(`Imported ${data.address || "listing"} from Zillow.`);
+        const missing = applyListing(data);
+        toast(`Imported ${data.address || "listing"} from Zillow.${missingSuffix(missing)}`, missing.length > 0);
         // Tell the /import popup it can close instead of opening a second
         // calculator tab that would fight this one over saved state.
         try { localStorage.setItem("hpa_import_ack", String(Date.now())); } catch (e2) {}
