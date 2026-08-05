@@ -25,6 +25,12 @@ comparisons, one-click Zillow listing import, and a polished printable report.
   taxes, HOA, and payment/cash-to-close for every scenario.
 - **New client reset** — one click clears the current client's details, homes,
   scenarios, and figures so the next client starts from a clean slate.
+- **Mobile / iOS support** — fully responsive layout, touch-friendly slider
+  and tap targets, and the standard fix for iOS Safari's auto-zoom-on-input
+  bug. Installable via Add to Home Screen (manifest + apple-touch-icon) for
+  a full-screen, app-like launch. The bookmarklet has a separate iOS install
+  path (edit-a-bookmark, with a copy-code button) since dragging to a
+  bookmarks bar isn't possible on mobile Safari.
 - **Payment targets** — named budget lines (e.g. "Comfort limit") drawn on
   the comparison chart with within/over chips on every scenario.
 - **Cash available at closing** — see instantly which options the client's

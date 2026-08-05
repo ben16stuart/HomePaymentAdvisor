@@ -308,13 +308,27 @@
 
   function renderChart() {
     const rows = state.scenarios.map((sc) => ({ name: sc.name, comp: HPA.compute(state.inputs, sc) }));
-    $("#chart").innerHTML = rows.length
-      ? HPA.buildChart(rows, state.targets)
+    const chartEl = $("#chart");
+    // Match the SVG's viewBox to the real container width so text renders at
+    // a legible pixel size on any screen, phones included, instead of being
+    // scaled down to fit a fixed 860-wide design.
+    const containerW = chartEl.clientWidth || chartEl.parentElement.clientWidth;
+    const width = containerW > 0 ? Math.round(containerW) : 860;
+    chartEl.innerHTML = rows.length
+      ? HPA.buildChart(rows, state.targets, { width })
       : `<p class="panel-hint">Add a scenario to see the comparison.</p>`;
     $("#chartLegend").innerHTML = HPA.SERIES
       .map((s) => `<span><i style="background:${s.color}"></i>${s.label}</span>`)
       .join("");
   }
+
+  // Re-render the chart when the viewport actually changes width (resize,
+  // rotation) — not on every scroll/etc — so it stays sized to its container.
+  let chartResizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(chartResizeTimer);
+    chartResizeTimer = setTimeout(renderChart, 150);
+  });
 
   /* ---------------------------------------------------------- input wiring */
   INPUT_KEYS.forEach((key) => {
@@ -387,7 +401,19 @@
   $("#bookmarklet").href = bookmarkletHref();
   $("#bookmarklet").addEventListener("click", (e) => {
     e.preventDefault();
-    toast("Don't click it here — drag the button up into your bookmarks bar, then use it on a Zillow listing.", true);
+    const msg = matchMedia("(pointer: coarse)").matches
+      ? "On a touchscreen you can't drag this — open “On iPhone or iPad? Install it differently” below instead."
+      : "Don't click it here — drag the button up into your bookmarks bar, then use it on a Zillow listing.";
+    toast(msg, true);
+  });
+  $("#btnCopyBookmarklet").addEventListener("click", async () => {
+    const code = $("#bookmarklet").href;
+    try {
+      await navigator.clipboard.writeText(code);
+      toast("Copied — paste it as the bookmark's address, replacing what's there.");
+    } catch (e) {
+      toast("Couldn't copy automatically — long-press the navy 🏡 Send to Payment Advisor button above and choose Copy Link instead.", true);
+    }
   });
   $("#btnZillow").addEventListener("click", () => { $("#zillowError").classList.add("hidden"); openModal("zillowModal"); });
   $("#btnOpenZillow").addEventListener("click", () => window.open("https://www.zillow.com", "_blank", "noopener"));

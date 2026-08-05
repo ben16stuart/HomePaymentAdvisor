@@ -139,7 +139,15 @@ const HPA = (() => {
     const width = opts.width || 860;
     const barH = 34, gap = 26, padTop = 8, padBottom = 30;
     const anyRent = rows.some((r) => r.comp.rent > 0);
-    const labelW = 150, valueW = anyRent ? 150 : 84, padRight = 16;
+    // Below ~480 (a phone viewport), the label/value columns are shrunk so
+    // the plot area doesn't get squeezed to nothing — the viewBox scales to
+    // the real container width (via width="100%"), so text stays legible.
+    const compact = width < 480;
+    const labelW = compact ? 92 : 150;
+    const valueW = compact ? (anyRent ? 92 : 58) : (anyRent ? 150 : 84);
+    const labelFont = compact ? 11 : 13;
+    const valueFont = compact ? 11.5 : 13;
+    const padRight = compact ? 8 : 16;
     const plotW = width - labelW - valueW - padRight;
     const height = padTop + rows.length * (barH + gap) - gap + padBottom;
 
@@ -166,7 +174,7 @@ const HPA = (() => {
     rows.forEach((r, i) => {
       const y = padTop + i * (barH + gap);
       const c = r.comp;
-      svg += `<text x="${labelW - 12}" y="${y + barH / 2 + 4}" text-anchor="end" font-size="13" font-weight="600" fill="var(--ink-1, #1b2430)">${esc(r.name)}</text>`;
+      svg += `<text x="${labelW - 12}" y="${y + barH / 2 + 4}" text-anchor="end" font-size="${labelFont}" font-weight="600" fill="var(--ink-1, #1b2430)">${esc(r.name)}</text>`;
       let x = labelW;
       SERIES.forEach((s) => {
         const v = c[s.key];
@@ -176,8 +184,8 @@ const HPA = (() => {
           `<title>${esc(r.name)} — ${s.label}: ${money(v)}/mo</title></rect>`;
         x += scale(v);
       });
-      const netNote = c.rent > 0 ? ` <tspan font-size="11.5" font-weight="600" fill="#0e7a4d">(${money(c.net)} net)</tspan>` : "";
-      svg += `<text x="${x + 8}" y="${y + barH / 2 + 4}" font-size="13" font-weight="700" fill="var(--ink-1, #1b2430)">${money(c.total)}${netNote}</text>`;
+      const netNote = c.rent > 0 ? ` <tspan font-size="${compact ? 10 : 11.5}" font-weight="600" fill="#0e7a4d">(${money(c.net)} net)</tspan>` : "";
+      svg += `<text x="${x + 8}" y="${y + barH / 2 + 4}" font-size="${valueFont}" font-weight="700" fill="var(--ink-1, #1b2430)">${money(c.total)}${netNote}</text>`;
     });
 
     // target lines

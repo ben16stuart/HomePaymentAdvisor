@@ -186,6 +186,22 @@ table.cmp tr.group td {
 .rent-mark { color: #0e7a4d; font-weight: 700; }
 
 /* ------------------------------------------------------------- print */
+/* ------------------------------------------------------------- on-screen mobile
+   (separate from @media print below — this is for viewing before printing) */
+@media screen and (max-width: 640px) {
+  .print-bar { padding: 10px 14px; font-size: 12px; gap: 8px; flex-wrap: wrap; }
+  .print-bar button { padding: 7px 14px; font-size: 12px; }
+  .page { padding: 22px 16px; margin: 0; max-width: none; }
+  .rpt-header { flex-direction: column; gap: 10px; }
+  .rpt-officer { text-align: left; }
+  .assump-grid { grid-template-columns: 1fr 1fr; }
+  .homes-grid { grid-template-columns: 1fr; }
+  .bd-grid { grid-template-columns: 1fr; }
+  .rpt-property { flex-direction: column; }
+  .rpt-property img { width: 100%; height: 160px; }
+  table.cmp { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
 @media print {
   .print-bar { display: none; }
   body { background: #fff; }

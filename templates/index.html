@@ -2,13 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Home Payment Advisor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
+  <!-- Add to Home Screen support -->
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon-180.png') }}">
+  <link rel="apple-touch-icon" sizes="167x167" href="{{ url_for('static', filename='icons/apple-touch-icon-167.png') }}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='icons/apple-touch-icon-152.png') }}">
+  <meta name="theme-color" content="#142a4a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Payment Advisor">
 </head>
 <body>
   <header class="topbar">
@@ -158,6 +168,25 @@
           <li>On the listing page, click <strong>🏡 Send to Payment Advisor</strong> in your bookmarks bar
             — the home and its numbers appear here automatically.</li>
         </ol>
+        <details>
+          <summary>On iPhone or iPad? Install it differently</summary>
+          <div class="ios-steps">
+            <p class="panel-hint" style="margin-top:8px">
+              iOS Safari has no bookmarks bar to drag onto, so bookmarklets install as an
+              edited bookmark instead — one-time setup, same result:
+            </p>
+            <ol class="steps">
+              <li>Bookmark this page: tap the <strong>Share</strong> icon, then <strong>Add Bookmark</strong>.</li>
+              <li>Copy the install code:
+                <button class="btn btn-outline btn-sm" id="btnCopyBookmarklet">📋 Copy Code</button></li>
+              <li>Open <strong>Bookmarks</strong> (the book icon), find the one you just added, and tap
+                <strong>Edit</strong>.</li>
+              <li>Rename it to <strong>Send to Payment Advisor</strong>, then replace its address with the
+                code you copied. Tap <strong>Done</strong>.</li>
+              <li>On any Zillow listing, open Bookmarks and tap it to import that home.</li>
+            </ol>
+          </div>
+        </details>
         <details>
           <summary>Alternative: paste the listing URL</summary>
           <p class="panel-hint" style="margin-top:8px">Zillow sometimes blocks this automated lookup — the bookmarklet above always works.</p>
